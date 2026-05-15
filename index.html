@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>護理安全訓練挑戰</title>
+    <style>
+        :root {
+            --primary: #1A5276;     /* Deeper, professional blue */
+            --secondary: #2980B9;   /* Lighter blue */
+            --accent: #1ABC9C;      /* Vibrant teal */
+            --success: #27AE60;     /* Clear green */
+            --danger: #E74C3C;      /* Alert red */
+            --warning: #F39C12;     /* Bright orange/yellow */
+            --text: #2C3E50;
+            --bg-light: #f4f7f6;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+            background-attachment: fixed;
+            color: var(--text); 
+            touch-action: manipulation; 
+            min-height: 100vh;
+            font-size: 18px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .header { 
+            background: linear-gradient(90deg, var(--primary), var(--secondary)); 
+            color: white; 
+            padding: 35px 20px; 
+            text-align: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
+            border-bottom: 5px solid var(--accent);
+        }
+        .header h1 { margin: 0; font-size: 32px; letter-spacing: 1.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+        .container { 
+            max-width: 1000px; 
+            margin: 40px auto; 
+            padding: 40px; 
+            background: rgba(255, 255, 255, 0.98); 
+            border-radius: 20px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
+            min-height: 70vh; 
+            position: relative; 
+            backdrop-filter: blur(10px);
+        }
+
+        .slogan {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px auto 45px auto;
+            padding: 20px 30px;
+            background: linear-gradient(90deg, rgba(26,188,156,0.1), rgba(41,128,185,0.1));
+            border-radius: 60px;
+            letter-spacing: 2px;
+            border: 2px solid rgba(26,188,156,0.3);
+            max-width: 95%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 20px; }
+        .game-card { 
+            background: white; 
+            border: 2px solid #E1E8ED; 
+            border-top: 8px solid var(--accent); 
+            border-radius: 18px; 
+            padding: 40px 25px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        .game-card:hover { 
+            border-color: var(--accent); 
+            transform: translateY(-12px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .game-card h2 { color: var(--primary); margin-top: 0; font-size: 26px; margin-bottom: 15px; }
+        .game-card p { color: #555; line-height: 1.6; font-size: 19px; }
+        
+        .hidden { display: none !important; }
+        
+        .g3-timer-wrapper { text-align: center; margin-bottom: 25px; }
+        .g3-timer-label { font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 8px; }
+        .g3-timer-box { font-size: 40px; font-weight: bold; color: var(--primary); padding: 15px; border-radius: 15px; background: #f0f4f8; width: 100px; margin: 0 auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
+        .timer-flash { animation: flash-red 0.5s infinite; }
+        @keyframes flash-red {
+            0% { background-color: #f0f4f8; color: var(--primary); }
+            50% { background-color: var(--danger); color: white; }
+            100% { background-color: #f0f4f8; color: var(--primary); }
+        }
+
+        .controls { display: flex; justify-content: space-between; margin-top: 40px; gap: 20px; position: relative; z-index: 10; }
+        .btn { 
+            padding: 18px 35px; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 18px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            color: white; 
+            transition: 0.3s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); filter: brightness(1.1); }
+        .btn-start { background: linear-gradient(45deg, var(--accent), #2ecc71); width: 100%; font-size: 26px; padding: 22px; margin-bottom: 25px; border-radius: 15px; }
+        .btn-submit { background: var(--success); }
+        .btn-retry { background: var(--warning); color: #2C3E50; }
+        .btn-return { background: var(--secondary); }
+        
+        .feedback-area { position: relative; margin-top: 35px; padding: 30px; border-radius: 15px; font-weight: bold; display: none; font-size: 20px; line-height: 1.6; box-shadow: 0 8px 20px rgba(0,0,0,0.1); overflow: visible; text-align: center; }
+        .feedback-area.success { background: #e8fcf1; color: #1E8449; border: 3px solid #2ECC71; }
+        .feedback-area.error { background: #fff1f0; color: #B03A2E; border: 3px solid #E74C3C; }
+        .feedback-area.warning { background: #fffcf0; color: #9A7D0A; border: 3px solid #F1C40F; }
+
+        .clap-wrapper { position: absolute; top: 50%; transform: translateY(-50%); display: none; z-index: 100; pointer-events: none; }
+        #clap-right { right: -70px; }
+        #clap-left { left: -70px; }
+        .clap-emoji { font-size: 80px; display: inline-block; animation: emoji-flash-zoom 0.8s infinite ease-in-out; }
+        @keyframes emoji-flash-zoom {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+        @keyframes emoji-flash-zoom-mirrored {
+            0% { transform: scaleX(-1) scale(0.8); opacity: 0.5; }
+            50% { transform: scaleX(-1) scale(1.3); opacity: 1; }
+            100% { transform: scaleX(-1) scale(0.8); opacity: 0.5; }
+        }
+        .clap-emoji.mirrored { animation-name: emoji-flash-zoom-mirrored; }
+
+        /* Game 1 Styling */
+        .drag-game-area { display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap; }
+        .pool { flex: 1; min-width: 280px; background: #f8f9fa; padding: 25px; border-radius: 15px; min-height: 400px; border: 2px solid #dee2e6; }
+        .drop-zones { flex: 2; display: flex; gap: 25px; min-width: 350px; }
+        .zone { flex: 1; border: 4px dashed #ced4da; border-radius: 18px; padding: 20px; min-height: 400px; background: #FAFAFA; display: flex; flex-direction: column; transition: 0.3s; }
+        .zone.dragover { background: #e6fcf5; border-color: var(--accent); }
+        .zone h3 { text-align: center; margin-top: 0; color: var(--secondary); border-bottom: 3px solid #eee; padding-bottom: 15px; font-size: 22px; }
+        
+        .draggable-item { 
+            background: white; 
+            border: 2px solid #dee2e6; 
+            padding: 18px; 
+            margin-bottom: 15px; 
+            border-radius: 12px; 
+            cursor: grab; 
+            text-align: center; 
+            font-size: 18px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+            transition: 0.3s; 
+            font-weight: 600; 
+            color: var(--primary); 
+            position: relative; 
+        }
+        .draggable-item:hover { transform: scale(1.02); border-color: var(--secondary); }
+        .item-correct { border-left: 8px solid var(--success) !important; background: #e8fcf1 !important; color: #1E8449 !important; }
+        .item-wrong { border-left: 8px solid var(--danger) !important; background: #fff1f0 !important; color: #B03A2E !important; }
+
+        /* Real-time Markers for Game 1 */
+        .g1-marker {
+            position: absolute;
+            right: -45px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: marker-bounce-flash 0.8s infinite alternate;
+            z-index: 5;
+        }
+
+        @keyframes marker-bounce-flash {
+            from { transform: translateY(-50%) scale(0.8); opacity: 0.7; }
+            to { transform: translateY(-50%) scale(1.2); opacity: 1; }
+        }
+
+        /* Celebration Animation - Fixed Pointer Events */
+        .celebration-pop {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            z-index: 5; /* Lowered so controls stay on top if needed, but the real fix is pointer-events */
+            pointer-events: none; 
+            animation: celeb-zoom-flash 1s infinite;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+
+        @keyframes celeb-zoom-flash {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+        }
+
+        /* Game 2 Styling */
+        .drug-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; pointer-events: none; opacity: 0.5; margin-top: 25px; }
+        .drug-grid.active { pointer-events: auto; opacity: 1; }
+        .drug-btn { background: white; border: 3px solid #dee2e6; padding: 22px 15px; border-radius: 15px; cursor: pointer; text-align: center; font-size: 18px; transition: 0.2s; user-select: none; font-weight: 600; box-shadow: 0 3px 6px rgba(0,0,0,0.06); }
+        .drug-btn:hover { border-color: var(--accent); background: #f0faff; }
+        .drug-btn.selected { background: var(--accent); color: white; border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .drug-btn.correct { background: var(--success); color: white; border-color: #1E8449; }
+        .drug-btn.missed { background: var(--warning); color: #333; border-color: #D4AC0D; }
+        .drug-btn.wrong { background: var(--danger); color: white; border-color: #B03A2E; }
+
+        /* Game 3 Styling */
+        .mcq-container { font-size: 20px; pointer-events: none; opacity: 0.5; margin-top: 25px; }
+        .mcq-container.active { pointer-events: auto; opacity: 1; }
+        .mcq-progress { font-weight: bold; color: var(--secondary); margin-bottom: 15px; font-size: 18px; }
+        .question-text { font-weight: 800; margin-bottom: 35px; color: var(--primary); font-size: 24px; line-height: 1.5; }
+        
+        .option-label { 
+            display: flex; 
+            align-items: center; 
+            padding: 20px 25px; 
+            margin-bottom: 18px; 
+            background: #ffffff; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            border: 3px solid #CAD4DB; 
+            font-weight: 700; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
+            color: #34495E;
+        }
+        .option-label:hover { border-color: var(--secondary); background: #f8fbff; }
+        .option-label input { transform: scale(1.7); margin-right: 25px; cursor: pointer; }
+        .option-label.selected { border-color: var(--secondary); background: #ebf5ff; }
+        
+        .option-label.g3-correct { border-color: var(--success) !important; background: #e8fcf1 !important; color: #1E8449 !important; }
+        .option-label.g3-wrong { border-color: var(--danger) !important; background: #fff1f0 !important; color: #B03A2E !important; }
+
+        .game-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; z-index: 20; border-radius: 20px; flex-direction: column; backdrop-filter: blur(5px); }
+        .symbol-red { color: var(--danger); font-weight: 900; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div id="clap-right" class="clap-wrapper"><span class="clap-emoji">👏</span></div>
+    <div id="clap-left" class="clap-wrapper"><span class="clap-emoji mirrored">👏</span></div>
+
+    <div class="header">
+        <h1>💊 派藥安全守護者 💊</h1>
+        <div style="margin-top:10px; font-size: 18px; opacity: 0.9;">Designed by 伊利沙伯醫院內科護理團隊</div>
+    </div>
+
+    <div class="container" id="main-menu">
+        <div class="slogan">🌟 攜手共建安全文化，同心守護病人安全 🌟</div>
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 30px; font-size: 28px;">請選擇訓練關卡</h2>
+        <div class="menu-grid">
+            <div class="game-card" onclick="openGame('game1')">
+                <h2>Game 1<br>三核五對 (3 Check 5 Right)</h2>
+                <p>拖曳項目至正確的派藥程序分類，掌握核心準則。</p>
+            </div>
+            <div class="game-card" onclick="openGame('game2')">
+                <h2>Game 2<br>高警訊藥物 (High Alert Medication)</h2>
+                <p>從藥物清單中，精準識別 9 種高警訊藥物。</p>
+            </div>
+            <div class="game-card" onclick="openGame('game3')">
+                <h2>Game 3<br>藥物敏感與警報 (CMS Allergy & Alert)</h2>
+                <p>測試你對藥物敏感及系統警報的專業認知。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container hidden" id="game1-container">
+        <h2 style="color: var(--primary); font-size: 28px;">🎯 Game 1: 三核五對 (3 Check 5 Right)</h2>
+        <div class="game-overlay" id="g1-overlay"><button class="btn btn-start" onclick="startGame(1)" style="width: 300px;">開始遊戲</button></div>
+        <div class="drag-game-area">
+            <div class="pool" id="g1-pool" ondragover="allowDrop(event)" ondrop="drop(event, 'pool')"><h3>待分類項目</h3></div>
+            <div class="drop-zones">
+                <div class="zone" id="zone-3c" ondragover="allowDrop(event)" ondrop="drop(event, '3c')"><h3>✅ 3 Checks</h3></div>
+                <div class="zone" id="zone-5r" ondragover="allowDrop(event)" ondrop="drop(event, '5r')"><h3>✅ 5 Rights</h3></div>
+            </div>
+        </div>
+        <div id="g1-feedback" class="feedback-area"></div>
+        <div class="controls">
+            <button class="btn btn-return" onclick="returnToMenu()">返回主頁</button>
+            <button class="btn btn-submit" id="g1-submit" onclick="submitGame1()" disabled>提交答案</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="game2-container">
+        <h2 style="color: var(--primary); font-size: 28px;">⚠️ Game 2: 高警訊藥物 (High Alert Medication)</h2>
+        <p style="color: #555; font-size: 20px; margin-bottom: 25px;">請選出所有 <strong>9 項</strong> High Alert Medication。</p>
+        <div class="game-overlay" id="g2-overlay"><button class="btn btn-start" onclick="startGame(2)" style="width: 300px;">開始遊戲</button></div>
+        <div class="drug-grid" id="g2-grid"></div>
+        <div id="g2-feedback" class="feedback-area"></div>
+        <div class="controls">
+            <button class="btn btn-return" onclick="returnToMenu()">返回主頁</button>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-retry hidden" id="g2-retry" onclick="retryGame2()">再試一次</button>
+                <button class="btn btn-submit" id="g2-submit" onclick="submitGame2()" disabled>提交答案</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container hidden" id="game3-container">
+        <div class="g3-timer-wrapper" id="g3-timer-wrapper"><div class="g3-timer-label">倒數計時</div><div id="g3-timer-display" class="g3-timer-box">30</div></div>
+        <h2 style="color: var(--primary); font-size: 28px;">📝 Game 3: 藥物敏感與警報 (CMS Allergy & Alert)</h2>
+        <div class="game-overlay" id="g3-overlay"><button class="btn btn-start" onclick="startGame(3)" style="width: 300px;">開始遊戲</button></div>
+        <div class="mcq-container" id="g3-mcq">
+            <div class="mcq-progress" id="g3-progress">問題 1 / 6</div>
+            <div class="question-text" id="g3-question">載入中...</div>
+            <div id="g3-options"></div>
+        </div>
+        <div id="g3-feedback" class="feedback-area"></div>
+        <div class="controls">
+            <button class="btn btn-return" onclick="returnToMenu()">返回主頁</button>
+            <button class="btn btn-submit" id="g3-next-btn" onclick="nextQuestionG3()" disabled>提交答案</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && ['c','v','a','x','u','s'].includes(e.key)) e.preventDefault();
+            if (e.key === 'F12') e.preventDefault();
+        });
+
+        let countdownInterval;
+        let g3SecondsLeft = 30;
+
+        const g1Items = [
+            { id: "i1", text: "Details of drug label against prescription", type: "3c" },
+            { id: "i2", text: "Dispensed drugs against prescription", type: "3c" },
+            { id: "i3", text: "Patient’s identity (at least 2 identifiers)", type: "3c" },
+            { id: "i4", text: "Patient (病人)", type: "5r" },
+            { id: "i5", text: "Medication (藥物)", type: "5r" },
+            { id: "i6", text: "Dose (劑量)", type: "5r" },
+            { id: "i7", text: "Route (途徑)", type: "5r" },
+            { id: "i8", text: "Time (時間)", type: "5r" },
+            { id: "w1", text: "Smell (氣味)", type: "wrong" },
+            { id: "w2", text: "Texture (質感)", type: "wrong" },
+            { id: "w3", text: "Sound (聲音)", type: "wrong" }
+        ];
+
+        const g2Drugs = [
+            { text: "Concentrated electrolytes", highAlert: true },
+            { text: "Chemotherapeutic agents", highAlert: true },
+            { text: "Drugs associated with drug allergies", highAlert: true },
+            { text: "Vasopressors and inotropes", highAlert: true },
+            { text: "Anticoagulants", highAlert: true },
+            { text: "Neuromuscular blocking agents", highAlert: true },
+            { text: "Oral hypoglycaemics", highAlert: true },
+            { text: "Insulins", highAlert: true },
+            { text: "Narcotics and opioids", highAlert: true },
+            { text: "Vitamin C supplements", highAlert: false },
+            { text: "Paracetamol", highAlert: false },
+            { text: "Antacids", highAlert: false },
+            { text: "Artificial tears", highAlert: false },
+            { text: "Cough lozenges", highAlert: false },
+            { text: "Normal Saline 0.9% IV", highAlert: false },
+            { text: "Simple laxatives", highAlert: false },
+            { text: "Probiotics", highAlert: false },
+            { text: "Statins", highAlert: false }
+        ];
+
+        const g3Questions = [
+            { q: "遇到病人對 Aspirin 敏感，應避免派發哪種屬於同 Group 的藥物？", options: ["Amoxicillin", "Naproxen (Naprosyn)", "Panadol", "Vitamin C"], ans: 1, explanation: "Aspirin, NSAIDs 與 COX II Inhibitors 屬於同一類別，可能引起 Cross-allergy。" },
+            { q: "關於派發含有多種成份的藥物 (Combination Drug) 如 Cortal™，應如何核對？", options: ["只需核對主成份", "必須逐款成份清楚核對", "系統會自動攔截，不用核對", "只憑經驗派發"], ans: 1, explanation: "如需處方或派發 Combination Drug (如 Cortal = Aspirin + Caffeine)，必須逐款成份 Check 清楚。" },
+            { q: "CMS Alert 中，如果 Allergen 旁邊帶有紅色的「<span class='symbol-red'>^</span>」符號或顯示為紅色字，代表什麼？", options: ["藥物已停產", "系統沒有為該藥物提供自動核對 (冇 system checking)", "病人對此藥有極度嚴重的敏感", "該藥物為高警訊藥物"], ans: 1, explanation: "紅色^符號或紅色字的 allergen 代表沒有 system checking，醫護人員必須自己加倍留意。" },
+            { q: "關於查閱 eHRSS（醫健通）內的藥物敏感記錄，以下哪項正確？", options: ["在 ePR 內可清楚分辨所有 alert 是否有 system checking", "必須睇返 CMS 嘅 Alert 才能確認是否有 system checking", "eHRSS 記錄不重要，只需看 CMS", "系統會自動把所有 eHRSS 記錄轉換成 structured entry"], ans: 1, explanation: "喺 ePR 睇 eHRSS 的 alert 是分不到有沒有 system checking 的，一定要睇返 CMS 的 Alert。" },
+            { q: "對於「Free Text Entry」輸入的藥物敏感，MOE 系統能否自動攔截？", options: ["能，系統能辨識所有 Free Text", "不能，系統截不到 Free Text Entry 的 Allergen", "只有抗生素才會攔截", "視乎字數長度"], ans: 1, explanation: "唔好靠晒 MOE System 幫你 Check，System 是截不到 Free Text Entry 的 Allergen 的。" },
+            { q: "開藥或派藥前，如未能確定藥物安全，必須怎樣做？", options: ["直接派發以免延誤", "必須先向上司、Pharmacy link 或藥房查詢確保病人安全", "問病人意見後派發", "上網查閱維基百科"], ans: 1, explanation: "開藥、派藥前如未能確定藥物安全，必須先向上司/pharmacy link/藥房查詢確保病人安全。" }
+        ];
+
+        let g3CurrentQIndex = 0;
+
+        function openGame(gameId) {
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById(gameId + '-container').classList.remove('hidden');
+            initGame(gameId);
+        }
+
+        function returnToMenu() {
+            stopG3Countdown(); stopClap();
+            document.querySelectorAll('.celebration-pop').forEach(el => el.remove());
+            document.querySelectorAll('.container:not(#main-menu)').forEach(c => c.classList.add('hidden'));
+            document.getElementById('main-menu').classList.remove('hidden');
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function triggerClap(feedbackId) {
+            const clapR = document.getElementById('clap-right');
+            const clapL = document.getElementById('clap-left');
+            const fb = document.getElementById(feedbackId);
+            fb.appendChild(clapR); fb.appendChild(clapL);
+            clapR.style.display = 'block'; clapL.style.display = 'block';
+        }
+
+        function stopClap() {
+            const clapR = document.getElementById('clap-right');
+            const clapL = document.getElementById('clap-left');
+            clapR.style.display = 'none'; clapL.style.display = 'none';
+            document.body.appendChild(clapR); document.body.appendChild(clapL);
+        }
+
+        function initGame(gameId) {
+            stopClap();
+            document.querySelectorAll('.celebration-pop').forEach(el => el.remove());
+            if(gameId === 'game1') {
+                document.getElementById('g1-overlay').style.display = 'flex';
+                document.getElementById('g1-submit').disabled = true;
+                document.getElementById('g1-feedback').style.display = 'none';
+                const pool = document.getElementById('g1-pool');
+                const z3 = document.getElementById('zone-3c');
+                const z5 = document.getElementById('zone-5r');
+                z3.innerHTML = '<h3>✅ 3 Checks</h3>'; z5.innerHTML = '<h3>✅ 5 Rights</h3>'; pool.innerHTML = '<h3>待分類項目</h3>';
+                shuffleArray([...g1Items]).forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'draggable-item'; div.draggable = true; div.id = item.id;
+                    div.dataset.type = item.type; div.innerText = item.text;
+                    div.ondragstart = e => e.dataTransfer.setData("text", e.target.id);
+                    pool.appendChild(div);
+                });
+            } else if (gameId === 'game2') {
+                document.getElementById('g2-overlay').style.display = 'flex';
+                document.getElementById('g2-grid').classList.remove('active');
+                document.getElementById('g2-submit').disabled = true;
+                document.getElementById('g2-retry').classList.add('hidden');
+                document.getElementById('g2-feedback').style.display = 'none';
+                const grid = document.getElementById('g2-grid');
+                grid.innerHTML = '';
+                shuffleArray([...g2Drugs]).forEach(drug => {
+                    const btn = document.createElement('div');
+                    btn.className = 'drug-btn'; btn.innerText = drug.text; btn.dataset.alert = drug.highAlert;
+                    btn.onclick = () => btn.classList.toggle('selected');
+                    grid.appendChild(btn);
+                });
+            } else if (gameId === 'game3') {
+                document.getElementById('g3-overlay').style.display = 'flex';
+                document.getElementById('g3-mcq').classList.remove('active');
+                document.getElementById('g3-feedback').style.display = 'none';
+                document.getElementById('g3-timer-wrapper').style.visibility = 'hidden';
+                document.getElementById('g3-mcq').style.display = 'block';
+                document.getElementById('g3-timer-wrapper').style.display = 'block';
+                document.getElementById('g3-next-btn').style.display = 'inline-block';
+                g3CurrentQIndex = 0; loadG3Question();
+            }
+        }
+
+        function startGame(gameNum) {
+            document.getElementById(`g${gameNum}-overlay`).style.display = 'none';
+            if(gameNum === 1) document.getElementById('g1-submit').disabled = false;
+            if(gameNum === 2) { document.getElementById('g2-grid').classList.add('active'); document.getElementById('g2-submit').disabled = false; }
+            if(gameNum === 3) { document.getElementById('g3-mcq').classList.add('active'); document.getElementById('g3-timer-wrapper').style.visibility = 'visible'; startG3Countdown(); }
+        }
+
+        /* Game 1 Logic - Enhanced with Instant Feedback */
+        function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+        
+        function drop(e, zoneId) {
+            e.preventDefault();
+            document.querySelectorAll('.zone, .pool').forEach(z => z.classList.remove('dragover'));
+            const data = e.dataTransfer.getData("text");
+            const el = document.getElementById(data);
+            
+            if (zoneId === 'pool') {
+                document.getElementById('g1-pool').appendChild(el);
+            } else if (zoneId === '3c') {
+                document.getElementById('zone-3c').appendChild(el);
+            } else if (zoneId === '5r') {
+                document.getElementById('zone-5r').appendChild(el);
+            }
+            
+            // Re-validate markers every time an item is dropped
+            updateG1Markers();
+        }
+
+        function updateG1Markers() {
+            const items = document.querySelectorAll('.draggable-item');
+            
+            items.forEach(item => {
+                const parentId = item.parentElement.id;
+                const correctType = item.dataset.type;
+                
+                // Remove existing markers first
+                const existingMarker = item.querySelector('.g1-marker');
+                if (existingMarker) existingMarker.remove();
+                item.classList.remove('item-correct', 'item-wrong');
+
+                if (parentId === 'g1-pool') return; // No markers if in the pool
+
+                const marker = document.createElement('div');
+                marker.className = 'g1-marker';
+
+                const isCorrect = (parentId === 'zone-3c' && correctType === '3c') || (parentId === 'zone-5r' && correctType === '5r');
+
+                if (isCorrect) {
+                    item.classList.add('item-correct');
+                    marker.innerHTML = '👍';
+                } else {
+                    item.classList.add('item-wrong');
+                    marker.innerHTML = '❌😢';
+                }
+                item.appendChild(marker);
+            });
+        }
+
+        function submitGame1() {
+            const items = document.querySelectorAll('.draggable-item');
+            const poolItemsCount = document.getElementById('g1-pool').querySelectorAll('.draggable-item').length;
+            let correctCount = 0;
+            let totalPossibleCorrect = 8; // 3 from 3C, 5 from 5R
+
+            items.forEach(item => {
+                const parentId = item.parentElement.id;
+                const correctType = item.dataset.type;
+                if ((parentId === 'zone-3c' && correctType === '3c') || (parentId === 'zone-5r' && correctType === '5r')) {
+                    correctCount++;
+                }
+            });
+
+            const fb = document.getElementById('g1-feedback');
+            fb.style.display = 'block';
+
+            // Win condition: All 8 correct items placed correctly, AND only 3 wrong items left in pool
+            if (correctCount === totalPossibleCorrect && poolItemsCount === 3) {
+                fb.className = 'feedback-area success';
+                fb.innerHTML = `🎉 完美！你已完全掌握 3 Checks 和 5 Rights。`;
+                triggerClap('g1-feedback');
+                showCelebration();
+            } else if (correctCount === totalPossibleCorrect) {
+                fb.className = 'feedback-area warning';
+                fb.innerHTML = `⚠️ 分類正確，但請移除不屬於任何分類的干擾項！`;
+            } else {
+                fb.className = 'feedback-area error';
+                fb.innerHTML = `⚠️ 檢查結果：你目前答對 ${correctCount}/${totalPossibleCorrect}。請檢查標記為 ❌😢 的項目。`;
+            }
+        }
+
+        function showCelebration() {
+            const existing = document.querySelector('.celebration-pop');
+            if (existing) existing.remove();
+            const celeb = document.createElement('div');
+            celeb.className = 'celebration-pop';
+            celeb.innerHTML = '✨ EXCELLENT! ✨';
+            document.body.appendChild(celeb);
+        }
+
+        /* Game 2 Logic */
+        function submitGame2() {
+            document.getElementById('g2-grid').classList.remove('active');
+            const btns = document.querySelectorAll('.drug-btn');
+            let correctChosen = 0, wrongChosen = 0, missed = 0;
+            btns.forEach(btn => {
+                const isSelected = btn.classList.contains('selected');
+                const isAlert = btn.dataset.alert === 'true';
+                btn.classList.remove('selected');
+                if (isSelected && isAlert) { btn.classList.add('correct'); correctChosen++; }
+                else if (isSelected && !isAlert) { btn.classList.add('wrong'); wrongChosen++; }
+                else if (!isSelected && isAlert) { btn.classList.add('missed'); missed++; }
+            });
+
+            const fb = document.getElementById('g2-feedback');
+            fb.style.display = 'block';
+            document.getElementById('g2-submit').disabled = true;
+
+            if (correctChosen === 9 && wrongChosen === 0) {
+                fb.className = 'feedback-area success';
+                fb.innerHTML = `🎉 恭喜！你成功找出了所有 9 種 High Alert Medication！`;
+                document.getElementById('g2-retry').classList.add('hidden');
+            } else {
+                fb.className = 'feedback-area warning';
+                fb.innerHTML = `📝 結果分析：答對 ${correctChosen} 項，答錯 ${wrongChosen} 項，漏選 ${missed} 項。<br><strong>加油！再接再厲。</strong><br><br><span style="color:#1E8449">綠色：正確選出</span> | <span style="color:#B03A2E">紅色：錯誤選擇</span> | <span style="color:#D4AC0D">黃色：遺漏的警訊藥物</span>`;
+                document.getElementById('g2-retry').classList.remove('hidden');
+            }
+        }
+
+        function retryGame2() {
+            initGame('game2');
+            startGame(2);
+        }
+
+        /* Game 3 Logic */
+        function startG3Countdown() {
+            g3SecondsLeft = 30;
+            const display = document.getElementById('g3-timer-display');
+            display.innerText = g3SecondsLeft;
+            display.classList.remove('timer-flash');
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                g3SecondsLeft--;
+                display.innerText = g3SecondsLeft;
+                if(g3SecondsLeft <= 0) { display.innerText = 0; display.classList.add('timer-flash'); }
+            }, 1000);
+        }
+        function stopG3Countdown() { clearInterval(countdownInterval); document.getElementById('g3-timer-display').classList.remove('timer-flash'); }
+
+        function loadG3Question() {
+            const qObj = g3Questions[g3CurrentQIndex];
+            document.getElementById('g3-progress').innerText = `問題 ${g3CurrentQIndex + 1} / 6`;
+            document.getElementById('g3-question').innerHTML = qObj.q; 
+            const container = document.getElementById('g3-options');
+            container.innerHTML = '';
+            qObj.options.forEach((opt, idx) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                const input = document.createElement('input');
+                input.type = 'radio'; input.name = 'g3-opt'; input.value = idx;
+                input.onchange = () => { 
+                    document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected', 'g3-wrong')); 
+                    label.classList.add('selected'); 
+                    document.getElementById('g3-next-btn').disabled = false; 
+                };
+                label.appendChild(input); label.appendChild(document.createTextNode(" " + opt));
+                container.appendChild(label);
+            });
+            document.getElementById('g3-feedback').style.display = 'none';
+            document.getElementById('g3-next-btn').disabled = true;
+            document.getElementById('g3-next-btn').innerText = "提交答案";
+            document.getElementById('g3-mcq').classList.add('active');
+            if(document.getElementById('g3-overlay').style.display === 'none') startG3Countdown();
+        }
+
+        function nextQuestionG3() {
+            const btn = document.getElementById('g3-next-btn');
+            const fb = document.getElementById('g3-feedback');
+            const qObj = g3Questions[g3CurrentQIndex];
+            const labels = document.querySelectorAll('.option-label');
+            
+            if (btn.innerText === "提交答案") {
+                const selInput = document.querySelector('input[name="g3-opt"]:checked');
+                const sel = parseInt(selInput.value);
+                
+                if (sel === qObj.ans) {
+                    stopG3Countdown();
+                    labels[sel].classList.remove('selected');
+                    labels[sel].classList.add('g3-correct');
+                    fb.className = 'feedback-area success'; 
+                    fb.innerHTML = `✅ 非常出色！答對了！<br><br><strong>重點筆記：</strong>${qObj.explanation}`;
+                    fb.style.display = 'block'; 
+                    document.getElementById('g3-mcq').classList.remove('active');
+                    triggerClap('g3-feedback');
+                    btn.innerText = g3CurrentQIndex === 5 ? "查看總結" : "下一題";
+                } else {
+                    labels[sel].classList.add('g3-wrong');
+                    fb.className = 'feedback-area error'; 
+                    fb.innerHTML = `❌ 別氣餒，這個選項不夠準確喔！<br><br><strong>提示：</strong>${qObj.explanation}<br><br>請再思考一下，選出最安全的答案。💪`;
+                    fb.style.display = 'block';
+                    document.getElementById('g3-next-btn').disabled = true;
+                }
+            } else {
+                stopClap();
+                if (g3CurrentQIndex === 5) {
+                    document.getElementById('g3-mcq').style.display = 'none';
+                    document.getElementById('g3-timer-wrapper').style.display = 'none';
+                    fb.className = 'feedback-area success';
+                    fb.innerHTML = `🏁 恭喜！你已成功克服所有挑戰，完成測驗！`;
+                    triggerClap('g3-feedback');
+                    btn.style.display = 'none';
+                } else { 
+                    g3CurrentQIndex++; 
+                    loadG3Question(); 
+                }
+            }
+        }
+    </script>
+</body>
+</html>
